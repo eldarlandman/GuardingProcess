@@ -80,6 +80,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/Itay Landman/CLionProjects/untitled1/funcsDeclerations.h">
+			<Option target="untitled1"/>
+		</Unit>
 		<Unit filename="C:/Users/Itay Landman/CLionProjects/untitled1/main.cpp">
 			<Option target="untitled1"/>
 		</Unit>

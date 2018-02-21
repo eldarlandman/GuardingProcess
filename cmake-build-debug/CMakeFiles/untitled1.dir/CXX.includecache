@@ -9,16 +9,12 @@
 C:/Users/Itay Landman/CLionProjects/untitled1/main.cpp
 iostream
 -
-iostream
--
 thread
 -
 windows.h
 -
+tlhelp32.h
+-
 stdio.h
--
-tchar.h
--
-psapi.h
 -
 
