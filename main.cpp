@@ -9,21 +9,44 @@ using namespace std;
 
 DWORD run(LPVOID args){
     char* procName=(char*)args;
-    char* fullPath=findRunningProcess(procName);
+    //char* fullPath=findRunningProcess(procName);
     while (isAlive){
         int i=4;
         while (findRunningProcess(procName)){
             sleep(1);
         }
-        system("notepad.exe");
+        reOpenProc(procName);
     }
 
     //
 }
 
 
-void reOpenProc(char* name) {
-    cout<<"proc is opened  again!";
+void reOpenProc(char* procName) {
+    // additional information
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+
+    // set the size of the structures
+    ZeroMemory( &si, sizeof(si) );
+    si.cb = sizeof(si);
+    ZeroMemory( &pi, sizeof(pi) );
+
+    // start the program up
+    CreateProcess( NULL,   // the path
+                   procName,
+                   NULL,           // Process handle not inheritable
+                   NULL,           // Thread handle not inheritable
+                   FALSE,          // Set handle inheritance to FALSE
+                   0,              // No creation flags
+                   NULL,           // Use parent's environment block
+                   NULL,           // Use parent's starting directory
+                   &si,            // Pointer to STARTUPINFO structure
+                   &pi             // Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
+    );
+    // Close process and thread handles.
+    CloseHandle( pi.hProcess );
+    CloseHandle( pi.hThread );
 }
 
 char* findRunningProcess(string process) {
@@ -103,7 +126,9 @@ int main(int argc, char* argv[]) {
 
                 if (input=="stop"){
                     isAlive=false;
-                    cout<<"bye-bye";
+                    cout<<"Stop guarding process..."<<endl;
+                    cout<<"bye-bye!";
+
                     break;
                 }
                 else{
@@ -113,7 +138,7 @@ int main(int argc, char* argv[]) {
             }
         }
         else{
-            cout<<"process name not Exist!"<<endl;
+            cout<<"Process "<<procName<<" is not a running process!"<<endl;
             cout<<"exiting...";
         }
 

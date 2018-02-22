@@ -8,7 +8,7 @@
 
 
 
-void reOpenProc(char* name);
+void reOpenProc(char* procName);
 char* findRunningProcess(string process);
 bool isAlive=true;
 DWORD run(LPVOID args); //LPVOID for compatibility between different versions of Windows (LPVOID aka void*)
