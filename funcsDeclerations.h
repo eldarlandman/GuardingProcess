@@ -8,8 +8,8 @@
 
 
 
-void reOpenProc(char* procName);
-char* findRunningProcess(string process);
+void ReOpenProc(char* procName);
+char* FindRunningProcess(string process);
 bool isAlive=true;
-DWORD run(LPVOID args); //LPVOID for compatibility between different versions of Windows (LPVOID aka void*)
+DWORD Run(LPVOID args); //LPVOID for compatibility between different versions of Windows (LPVOID aka void*)
 #endif //UNTITLED1_FUNCSDECLERATIONS_H
