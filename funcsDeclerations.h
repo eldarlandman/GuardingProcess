@@ -9,6 +9,7 @@
 
 
 void reOpenProc(char* name);
-bool findRunningProcess(std::string process);
+char* findRunningProcess(string process);
 bool isAlive=true;
+DWORD run(LPVOID args); //LPVOID for compatibility between different versions of Windows (LPVOID aka void*)
 #endif //UNTITLED1_FUNCSDECLERATIONS_H

@@ -3,17 +3,20 @@ using namespace std;
 #include <thread>
 #include <windows.h>
 #include <tlhelp32.h>
-#include <stdio.h>
 #include <unistd.h>
-#include "funcsDeclerations.h";
+#include "funcsDeclerations.h"
 
 
-    DWORD run(LPVOID procName){
-    while (true){
-
-//        while (findRunningProcess((string*)procName)){
-//            sleep(5000);
-//        }
+DWORD run(LPVOID args){
+    string procName=(char*)args;
+    while (isAlive){
+        int i=4;
+        while (findRunningProcess(procName)){
+            sleep(1);
+            cout<<"im awake!";
+        }
+        system("C:\\Windows\\System32\\notepad.exe");
+        cout<<"im here";
     }
 
     //
@@ -24,34 +27,36 @@ void reOpenProc(char* name) {
     cout<<"proc is opened  again!";
 }
 
-bool findRunningProcess(string process) {
+char* findRunningProcess(string process) {
 /*
 Function takes in a string value for the process it is looking for like ST3Monitor.exe
 then loops through all of the processes that are currently running on windows.
 If the process is found it is running, therefore the function returns true.
 */
     string compare;
-    bool procRunning = false;
-
+   // bool procRunning = false;
+    char* fullPath;
     HANDLE hProcessSnap;
-    PROCESSENTRY32 pe32;
+   // PROCESSENTRY32 pe32;
+    MODULEENTRY32 lpme;
     hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
     if (hProcessSnap == INVALID_HANDLE_VALUE) {
-        procRunning = false;
+        char* fullPath= NULL;
     } else {
-        pe32.dwSize = sizeof(PROCESSENTRY32);
-        if (Process32First(hProcessSnap, &pe32)) { // Gets first running process
-            if (pe32.szExeFile == process) {
-                procRunning = true;
+        lpme.dwSize = sizeof(LPMODULEENTRY32);
+        if (Module32First(hProcessSnap,&lpme)) { // Gets first running process
+            if (lpme.szModule== process) {
+                fullPath=lpme.szExePath;
             } else {
                 // loop through all running processes looking for process
-                while (Process32Next(hProcessSnap, &pe32)) {
+                while (Module32Next(hProcessSnap,&lpme)) {
                     // Set to an AnsiString instead of Char[] to make compare easier
-                    compare = pe32.szExeFile;
-                    if (compare == process) {
+                    compare = lpme.szModule;
+                    if (compare == process)  {
                         // if found process is running, set to true and break from loop
-                        procRunning = true;
+                       // procRunning = true;
+                        fullPath=lpme.szExePath;
                         break;
                     }
                 }
@@ -61,11 +66,12 @@ If the process is found it is running, therefore the function returns true.
         }
     }
 
-    return procRunning;
+    return fullPath;
 }
 
 ///////////////////////////////////////////////////////////
 //TODO: change all functions to start with capital letter;
+//TODO: Add refferences;
 int main(int argc, char* argv[]) {
 
     int isAlive=1; //Changes to zero when user type 'stop'
@@ -85,14 +91,18 @@ int main(int argc, char* argv[]) {
                          procName,          // argument to thread function
                          0,                      // use default creation flags
                          &pid);
-            //main process wait for "guard" to finish
+            cout<<"Thread "<<pid<<" start guarding process "<<procName<<"..."<<endl;
+            cout<<"Type 'stop' to exit:\n";
             while(cin>>input){
+
                 if (input=="stop"){
+                    isAlive=false;
                     cout<<"bye-bye";
                     break;
                 }
                 else{
-                    cout<<"nothing happened";
+                    cout<<"Wrong input!\n";
+                    cout<<"Type 'stop' to exit:\n";
                 }
             }
         }

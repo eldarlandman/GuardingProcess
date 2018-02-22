@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+C:/Users/Itay Landman/CLionProjects/untitled1/funcsDeclerations.h
+string
+-
+
 C:/Users/Itay Landman/CLionProjects/untitled1/main.cpp
 iostream
 -
@@ -15,6 +19,8 @@ windows.h
 -
 tlhelp32.h
 -
-stdio.h
+unistd.h
 -
+funcsDeclerations.h
+C:/Users/Itay Landman/CLionProjects/untitled1/funcsDeclerations.h
 
