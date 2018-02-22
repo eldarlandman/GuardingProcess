@@ -8,15 +8,14 @@ using namespace std;
 
 
 DWORD run(LPVOID args){
-    string procName=(char*)args;
+    char* procName=(char*)args;
+    char* fullPath=findRunningProcess(procName);
     while (isAlive){
         int i=4;
         while (findRunningProcess(procName)){
             sleep(1);
-            cout<<"im awake!";
         }
-        system("C:\\Windows\\System32\\notepad.exe");
-        cout<<"im here";
+        system("notepad.exe");
     }
 
     //
@@ -35,28 +34,35 @@ If the process is found it is running, therefore the function returns true.
 */
     string compare;
    // bool procRunning = false;
-    char* fullPath;
+    char* fullPath=NULL;
     HANDLE hProcessSnap;
-   // PROCESSENTRY32 pe32;
-    MODULEENTRY32 lpme;
+    PROCESSENTRY32 pe32;
+    HANDLE hProcess;
+    //MODULEENTRY32 lpme;
     hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
     if (hProcessSnap == INVALID_HANDLE_VALUE) {
-        char* fullPath= NULL;
+        fullPath= NULL;
     } else {
-        lpme.dwSize = sizeof(LPMODULEENTRY32);
-        if (Module32First(hProcessSnap,&lpme)) { // Gets first running process
-            if (lpme.szModule== process) {
-                fullPath=lpme.szExePath;
+        pe32.dwSize = sizeof(PROCESSENTRY32);
+        if (Process32First(hProcessSnap,&pe32)) { // Gets first running process
+            if (pe32.szExeFile== process) {
+                hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, pe32.th32ProcessID);
+                DWORD value = MAX_PATH;
+                char buffer[MAX_PATH];
+                QueryFullProcessImageName(hProcess, 0, buffer, &value);
+                fullPath=buffer;
             } else {
                 // loop through all running processes looking for process
-                while (Module32Next(hProcessSnap,&lpme)) {
+                while (Process32Next(hProcessSnap,&pe32)) {
                     // Set to an AnsiString instead of Char[] to make compare easier
-                    compare = lpme.szModule;
+                    compare = pe32.szExeFile;
                     if (compare == process)  {
-                        // if found process is running, set to true and break from loop
-                       // procRunning = true;
-                        fullPath=lpme.szExePath;
+                        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, pe32.th32ProcessID);
+                        DWORD value = MAX_PATH;
+                        char buffer[MAX_PATH];
+                        QueryFullProcessImageName(hProcess, 0, buffer, &value);
+                        fullPath=buffer;
                         break;
                     }
                 }
@@ -66,7 +72,7 @@ If the process is found it is running, therefore the function returns true.
         }
     }
 
-    return fullPath;
+    return fullPath;//***********
 }
 
 ///////////////////////////////////////////////////////////
