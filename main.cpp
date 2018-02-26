@@ -24,7 +24,6 @@ void ReOpenProc(char* procName) {
     // additional information
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
-
     // set the size of the structures
     ZeroMemory( &si, sizeof(si) );
     si.cb = sizeof(si);

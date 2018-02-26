@@ -6,11 +6,11 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/Itay Landman/CLionProjects/untitled1/funcsDeclerations.h
+C:/Users/Itay Landman/CLionProjects/GuardingProcess/funcsDeclerations.h
 string
 -
 
-C:/Users/Itay Landman/CLionProjects/untitled1/main.cpp
+C:/Users/Itay Landman/CLionProjects/GuardingProcess/main.cpp
 iostream
 -
 thread
@@ -22,5 +22,5 @@ tlhelp32.h
 unistd.h
 -
 funcsDeclerations.h
-C:/Users/Itay Landman/CLionProjects/untitled1/funcsDeclerations.h
+C:/Users/Itay Landman/CLionProjects/GuardingProcess/funcsDeclerations.h
 
