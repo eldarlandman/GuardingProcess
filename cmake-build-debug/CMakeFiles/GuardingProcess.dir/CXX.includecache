@@ -21,6 +21,8 @@ tlhelp32.h
 -
 unistd.h
 -
+tchar.h
+-
 funcsDeclerations.h
 C:/Users/Itay Landman/CLionProjects/GuardingProcess/funcsDeclerations.h
 
