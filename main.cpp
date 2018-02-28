@@ -14,13 +14,15 @@ DWORD Run(LPVOID args){
     char* procName=(char*)args;
     //char* fullPath=findRunningProcess(procName);  //Actually never used. Works fine with the process executable name.
     while (isAlive){
-        int i=4;
-        while (FindRunningProcess(procName)){
+        bool isProcessRunning;
+
+        while (isProcessRunning = FindRunningProcess(procName) && isAlive){
             sleep(1);
         }
-        ReOpenProc(procName);
+        if (!isProcessRunning && isAlive){
+            ReOpenProc(procName);
+        }
     }
-
 }
 
 void ReOpenProc(char* procName) {
@@ -49,19 +51,22 @@ void ReOpenProc(char* procName) {
     CreateProcess( NULL,   // lpApplicationName- The name of the module to be executed.
                            // The string can specify the full path and file name of the module to execute
                            // or it can specify a partial name.
-                           //The lpApplicationName parameter can be NULL.
-                           // In that case, the module name must be the first white space–delimited token in the lpCommandLine string.
+                           //In a case of NULL-The module name must be the first white space–delimited token in the lpCommandLine string.
+                           //Dangerous because If the executable or path name has a space in it, there is a risk that a different executable could be run
 
-                   procName, //The command line to be executed.
+                   procName, //The command line to be executed- because notepad (and many more) is a standart command line app.
                              //this parameter cannot be a pointer to read-only memory (such as a const variable or a literal string).
                              // If this parameter is a constant string, the function may cause an access violation.
                              //system searches for the execuable file in the following sequence:
                                //The directory from which the application loaded.
                                // The current directory for the parent process.
                                // The 32-bit Windows system directory. Use the GetSystemDirectory function to get the path of this directory.
-                               //The 16-bit Windows system directory. There is no function that obtains the path of this directory, but it is searched. The name of this directory is System.
+                               //The 16-bit Windows system directory. There is no function that obtains the path of this directory,
+                               // but it is searched. The name of this directory is System.
                                //The Windows directory. Use the GetWindowsDirectory function to get the path of this directory.
-                               //The directories that are listed in the PATH environment variable. Note that this function does not search the per-application path specified by the App Paths registry key. To include this per-application path in the search sequence, use the ShellExecute function.
+                               //The directories that are listed in the PATH environment variable. Note that this function
+                               // does not search the per-application path specified by the App Paths registry key.
+                               // To include this per-application path in the search sequence, use the ShellExecute function.
 
                    NULL,           // Process handle not inheritable.
                                    //A pointer to a SECURITY_ATTRIBUTES structure that determines whether the returned handle
@@ -81,7 +86,9 @@ void ReOpenProc(char* procName) {
                    &pi             // Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
     );
     // Close process and thread handles.
-    cout<< si.lpDesktop << " , " <<  si.lpTitle << " , " << "sizes: width:"<< si.dwXSize<<" , height: "<<si.dwYSize <<" , screen buffer width:"<< si.dwXCountChars << " ,colors:  " <<si.dwFillAttribute<<endl;
+    //Otherwise, when the child process exits, the system cannot clean up the process structures for the child process
+    // because the parent process still has open handles to the child process.
+    //The CloseHandle function closes handles to the following objects:Access Token, Communication device, Console input,File etc.
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );
 }
@@ -107,11 +114,12 @@ If the process is found it is running , therefore the function returns his path.
     } else {
         pe32.dwSize = sizeof(PROCESSENTRY32);
         if (Process32First(hProcessSnap,&pe32)) { // Gets first running process
-            printProcDetails(&pe32);
+           // printProcDetails(&pe32);
             if (pe32.szExeFile== process) { //the next lines retrieve the full path of the process
-                //PROCESS_QUERY_INFORMATION - Required to retrieve certain information about a process, such as its token, exit code, and priority class
-                //false- If this value is TRUE, processes created by this process will inherit the handle. Otherwise, the processes do not inherit this handle.
-                //th32processId- The identifier of the local process to be opened.
+                //- PROCESS_QUERY_INFORMATION - Required to retrieve certain information about a process, such as its token, exit code, and priority class
+                   // This access right is checked against the security descriptor for the process
+                //- false- If this value is TRUE, processes created by this process will inherit the handle. Otherwise, the processes do not inherit this handle.
+                //- th32processId- The identifier of the local process to be opened.
                 hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, pe32.th32ProcessID);
                 DWORD value = MAX_PATH;
                 char buffer[MAX_PATH];
@@ -122,7 +130,7 @@ If the process is found it is running , therefore the function returns his path.
             } else {
                 // Loop through all running processes looking for process
                 while (Process32Next(hProcessSnap,&pe32)) {
-                    printProcDetails(&pe32);
+                  //  printProcDetails(&pe32);
                     compare = pe32.szExeFile;
                     if (compare == process)  {
                         hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, pe32.th32ProcessID);
